@@ -1,3 +1,3 @@
-const nsfwServer = require('./nsfwServer');
+const nsfwServer = require('./src/nsfwServer');
 
 nsfwServer();

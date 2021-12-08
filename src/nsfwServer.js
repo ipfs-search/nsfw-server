@@ -3,9 +3,11 @@ const Boom = require('@hapi/boom');
 const axios = require('axios');
 const tf = require('@tensorflow/tfjs-node');
 const nsfw = require('nsfwjs');
+const logger = require('./logger');
 
-// TODO add process env condition
-tf.enableProdMode();
+if (process.env.NODE_ENV === 'production') {
+  tf.enableProdMode();
+}
 
 const nsfwServer = async () => {
   const server = Hapi.server({
@@ -13,13 +15,16 @@ const nsfwServer = async () => {
     host: 'localhost',
   });
 
+  // TODO: offline loading
   const model = await nsfw.load();
 
   server.route({
     method: 'GET',
     path: '/classify',
     handler: async (request, h) => {
+      logger.info({ request: request.url });
       const { url } = request.query;
+
       if (url === undefined) {
         return Boom.badRequest('no url specified');
       }
@@ -27,14 +32,22 @@ const nsfwServer = async () => {
       const axiosResponse = await axios.get(url, {
         responseType: 'arraybuffer',
       })
-        .catch(Boom.badRequest); // 400
+
+      logger.info({ url, status: axiosResponse?.status });
+      console.log(url, axiosResponse?.status);
+      if (axiosResponse.status >= 400) {
+        return Boom.badRequest('bad url response');
+      }
 
       try {
         const decodedImage = await tf.node.decodeImage(axiosResponse.data, 3);
         const classification = await model.classify(decodedImage);
         decodedImage.dispose();
+
+        // TODO: add versioning to response
         return h.response(classification).code(200);
       } catch (error) {
+        logger.error({ request: request.url, errorMessage: error.message });
         return Boom.unsupportedMediaType(error); // 415
       }
     },
@@ -46,7 +59,7 @@ const nsfwServer = async () => {
 };
 
 process.on('unhandledRejection', (err) => {
-  console.log(err);
+  logger.error(err);
   process.exit(1);
 });
 

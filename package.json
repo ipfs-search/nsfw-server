@@ -2,7 +2,7 @@
   "name": "nsfw-server",
   "version": "1.0.0",
   "description": "A simple server to return nsfw.js results for images",
-  "main": "nsfwServer.js",
+  "main": "src/nsfwServer.js",
   "scripts": {
     "test": "npx jest --watch",
     "serve": "nodemon runServer.js"
@@ -30,6 +30,7 @@
     "@hapi/hapi": "^20.2.1",
     "@tensorflow/tfjs-node": "^3.11.0",
     "axios": "^0.24.0",
-    "nsfwjs": "^2.4.1"
+    "nsfwjs": "^2.4.1",
+    "winston": "^3.3.3"
   }
 }

@@ -2,7 +2,7 @@ const request = require('supertest');
 
 const Hapi = require('@hapi/hapi');
 const Inert = require('@hapi/inert');
-const NsfwServer = require('../nsfwServer');
+const NsfwServer = require('../src/nsfwServer');
 
 let nsfwServer;
 
@@ -25,6 +25,38 @@ describe('mozilla grapefruit jpg', () => {
     request(nsfwServer.listener)
       .get(`/classify?url=${grapefruitURL}`)
       .expect(200)
+      .then(() => done())
+      .catch((error) => done(error));
+  });
+});
+
+describe('ipfs drawing', () => {
+  const grapefruitURL = 'http://localhost:7327/bafkreih2bo2drvjk77u2hdxdti3jtivjoiq2bp3btvklbs4oz5zembc2fa';
+  it('should return a 200 status code', (done) => {
+    request(nsfwServer.listener)
+      .get(`/classify?url=${grapefruitURL}`)
+      .expect(200)
+      .then(() => done())
+      .catch((error) => done(error));
+  });
+});
+
+describe('no url specified', () => {
+  it('should return a 404 status code', (done) => {
+    request(nsfwServer.listener)
+      .get('/classify')
+      .expect(400)
+      .then(() => done())
+      .catch((error) => done(error));
+  });
+});
+
+describe('axios 404', () => {
+  const grapefruitURL = 'http://localhost:7327/i_never_existed';
+  it('should return a 404 status code', (done) => {
+    request(nsfwServer.listener)
+      .get(`/classify?url=${grapefruitURL}`)
+      .expect(400)
       .then(() => done())
       .catch((error) => done(error));
   });
