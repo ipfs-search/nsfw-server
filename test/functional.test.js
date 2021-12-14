@@ -27,6 +27,11 @@ describe('mozilla grapefruit jpg', () => {
       .expect(200)
       .expect(({ body }) => {
         expect(body.nsfwjsVersion).toBeTruthy();
+        expect(body).toHaveProperty('hentai');
+        expect(body).toHaveProperty('neutral');
+        expect(body).toHaveProperty('porn');
+        expect(body).toHaveProperty('drawing');
+        expect(body).toHaveProperty('sexy');
       })
       .end(done);
   });

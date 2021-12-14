@@ -16,7 +16,7 @@ const nsfwServer = async () => {
     host: 'localhost',
   });
 
-  // TODO: offline loading
+  // TODO: offline loading / self hosting
   const model = await nsfw.load();
 
   server.route({
@@ -51,7 +51,7 @@ const nsfwServer = async () => {
         decodedImage.dispose();
 
         return h.response({
-          ...classification,
+          ...Object.fromEntries(classification.map((entry) => [entry.className.toLowerCase(), entry.probability])),
           nsfwjsVersion,
         }).code(200);
       } catch (error) {
