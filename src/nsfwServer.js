@@ -22,19 +22,24 @@ const nsfwServer = async () => {
     method: 'GET',
     path: '/classify',
     handler: async (request, h) => {
-      logger.info({ request: request.url });
+      logger.info({ method: 'GET', message: request.url });
       const { url } = request.query;
 
       if (url === undefined) {
         return Boom.badRequest('no url specified');
       }
 
-      const axiosResponse = await axios.get(url, {
-        responseType: 'arraybuffer',
-      })
+      let axiosResponse;
+      try {
+        axiosResponse = await axios.get(url, {
+          responseType: 'arraybuffer',
+        });
+      } catch (error) {
+        const message = `Error fetching data for ${url} - got code ${error.toJSON().status}`;
+        logger.error({ code: 503, message });
+        return Boom.serverUnavailable(message);
+      }
 
-      logger.info({ url, status: axiosResponse?.status });
-      console.log(url, axiosResponse?.status);
       if (axiosResponse.status >= 400) {
         return Boom.badRequest('bad url response');
       }

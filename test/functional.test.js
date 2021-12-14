@@ -42,7 +42,7 @@ describe('ipfs drawing', () => {
 });
 
 describe('no url specified', () => {
-  it('should return a 404 status code', (done) => {
+  it('should return a 400 status code', (done) => {
     request(nsfwServer.listener)
       .get('/classify')
       .expect(400)
@@ -53,10 +53,10 @@ describe('no url specified', () => {
 
 describe('axios 404', () => {
   const grapefruitURL = 'http://localhost:7327/i_never_existed';
-  it('should return a 404 status code', (done) => {
+  it('should return 503 - bad gateway', (done) => {
     request(nsfwServer.listener)
       .get(`/classify?url=${grapefruitURL}`)
-      .expect(400)
+      .expect(503)
       .then(() => done())
       .catch((error) => done(error));
   });
