@@ -25,19 +25,10 @@ describe('mozilla grapefruit jpg', () => {
     request(nsfwServer.listener)
       .get(`/classify?url=${grapefruitURL}`)
       .expect(200)
-      .then(() => done())
-      .catch((error) => done(error));
-  });
-});
-
-describe('ipfs drawing', () => {
-  const grapefruitURL = 'http://localhost:7327/bafkreih2bo2drvjk77u2hdxdti3jtivjoiq2bp3btvklbs4oz5zembc2fa';
-  it('should return a 200 status code', (done) => {
-    request(nsfwServer.listener)
-      .get(`/classify?url=${grapefruitURL}`)
-      .expect(200)
-      .then(() => done())
-      .catch((error) => done(error));
+      .expect(({ body }) => {
+        expect(body.nsfwjsVersion).toBeTruthy();
+      })
+      .end(done);
   });
 });
 
@@ -46,8 +37,7 @@ describe('no url specified', () => {
     request(nsfwServer.listener)
       .get('/classify')
       .expect(400)
-      .then(() => done())
-      .catch((error) => done(error));
+      .end(done);
   });
 });
 
@@ -57,8 +47,7 @@ describe('axios 404', () => {
     request(nsfwServer.listener)
       .get(`/classify?url=${grapefruitURL}`)
       .expect(503)
-      .then(() => done())
-      .catch((error) => done(error));
+      .end(done);
   });
 });
 

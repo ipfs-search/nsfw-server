@@ -4,6 +4,7 @@ const axios = require('axios');
 const tf = require('@tensorflow/tfjs-node');
 const nsfw = require('nsfwjs');
 const logger = require('./logger');
+const nsfwjsVersion = require('./nsfwVersion');
 
 if (process.env.NODE_ENV === 'production') {
   tf.enableProdMode();
@@ -49,8 +50,10 @@ const nsfwServer = async () => {
         const classification = await model.classify(decodedImage);
         decodedImage.dispose();
 
-        // TODO: add versioning to response
-        return h.response(classification).code(200);
+        return h.response({
+          ...classification,
+          nsfwjsVersion,
+        }).code(200);
       } catch (error) {
         logger.error({ request: request.url, errorMessage: error.message });
         return Boom.unsupportedMediaType(error); // 415
