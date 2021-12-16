@@ -12,7 +12,7 @@ const staticServer = new Hapi.server({
 });
 
 beforeAll(async () => {
-  nsfwServer = await NsfwServer();
+  nsfwServer = await NsfwServer({ port: 9027 });
 
   await staticServer.register(Inert);
   staticServer.route({ method: 'GET', path: '/{param*}', handler: { directory: { path: __dirname } } });
@@ -27,11 +27,11 @@ describe('mozilla grapefruit jpg', () => {
       .expect(200)
       .expect(({ body }) => {
         expect(body.nsfwjsVersion).toBeTruthy();
-        expect(body).toHaveProperty('hentai');
-        expect(body).toHaveProperty('neutral');
-        expect(body).toHaveProperty('porn');
-        expect(body).toHaveProperty('drawing');
-        expect(body).toHaveProperty('sexy');
+        expect(body).toHaveProperty('classification.hentai');
+        expect(body).toHaveProperty('classification.neutral');
+        expect(body).toHaveProperty('classification.porn');
+        expect(body).toHaveProperty('classification.drawing');
+        expect(body).toHaveProperty('classification.sexy');
       })
       .end(done);
   });

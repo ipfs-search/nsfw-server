@@ -10,10 +10,10 @@ if (process.env.NODE_ENV === 'production') {
   tf.enableProdMode();
 }
 
-const nsfwServer = async () => {
+const nsfwServer = async ({ port = 3000, host = 'localhost' }) => {
   const server = Hapi.server({
-    port: 3000,
-    host: 'localhost',
+    port,
+    host,
   });
 
   // TODO: offline loading / self hosting
@@ -51,7 +51,9 @@ const nsfwServer = async () => {
         decodedImage.dispose();
 
         return h.response({
-          ...Object.fromEntries(classification.map((entry) => [entry.className.toLowerCase(), entry.probability])),
+          classification: Object.fromEntries(classification.map(
+            (entry) => [entry.className.toLowerCase(), entry.probability],
+          )),
           nsfwjsVersion,
         }).code(200);
       } catch (error) {
