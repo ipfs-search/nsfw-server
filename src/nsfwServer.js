@@ -62,15 +62,15 @@ const nsfwServer = async ({ port = 3000, host = 'localhost' }) => {
       }
     },
   });
-
   await server.start();
-  console.log('Server running on %s', server.info.uri);
+  logger.info({message: `Server running on port ${server.info.uri}`});
   return server;
 };
 
-process.on('unhandledRejection', (err) => {
-  logger.error(err);
-  process.exit(1);
-});
+// process.on('unhandledRejection', (reason, promise) => {
+//   logger.error({message: 'Unhandled rejection', reason, promise});
+  // Application specific logging, throwing an error, or other logic here
+  // process.exit(1);
+// });
 
 module.exports = nsfwServer;
