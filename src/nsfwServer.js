@@ -10,7 +10,7 @@ if (process.env.NODE_ENV === 'production') {
   tf.enableProdMode();
 }
 
-const nsfwServer = async ({ port = 3000, host = 'localhost' }) => {
+const nsfwServer = async ({ port = 3000, host = '0.0.0.0' }) => {
   const server = Hapi.server({
     port,
     host,
@@ -18,6 +18,16 @@ const nsfwServer = async ({ port = 3000, host = 'localhost' }) => {
 
   // TODO: offline loading / self hosting
   const model = await nsfw.load();
+
+  server.route({
+    method: 'GET',
+    path: '/',
+    handler: function (request, h) {
+      logger.info('/ received');
+
+      return 'This is the "Not suitable for work" server';
+    }
+  });
 
   server.route({
     method: 'GET',
