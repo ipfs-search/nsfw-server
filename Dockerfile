@@ -1,7 +1,5 @@
 FROM node:16-buster
 
-RUN npm install -g nodemon
-
 # Create app directory
 WORKDIR /usr/src/app
 

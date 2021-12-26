@@ -12,7 +12,7 @@ const staticServer = new Hapi.server({
 });
 
 beforeAll(async () => {
-  nsfwServer = await NsfwServer({ port: 9027 });
+  nsfwServer = await NsfwServer();
 
   await staticServer.register(Inert);
   staticServer.route({ method: 'GET', path: '/{param*}', handler: { directory: { path: __dirname } } });
