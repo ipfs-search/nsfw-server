@@ -1,3 +1,6 @@
+// eslint-disable-next-line no-unused-expressions,global-require
+process.env.NODE_ENV && require('dotenv').config({ path: `./.env.${process.env.NODE_ENV}` });
+
 const Hapi = require('@hapi/hapi');
 const Boom = require('@hapi/boom');
 const axios = require('axios');
@@ -8,16 +11,27 @@ const nsfwjsVersion = require('./nsfwVersion');
 
 if (process.env.NODE_ENV === 'production') {
   tf.enableProdMode();
+  logger.info('Tensorflow production mode enabled');
 }
 
-const nsfwServer = async ({ port = 3000, host = 'localhost' }) => {
+const nsfwServer = async () => {
   const server = Hapi.server({
-    port,
-    host,
+    port: process.env.PORT || 3000,
+    host: process.env.HOST || 'localhost',
   });
 
   // TODO: offline loading / self hosting
   const model = await nsfw.load();
+
+  server.route({
+    method: 'GET',
+    path: '/',
+    handler() {
+      logger.info('/ received');
+
+      return 'This is the "Not suitable for work" server';
+    },
+  });
 
   server.route({
     method: 'GET',
@@ -62,14 +76,16 @@ const nsfwServer = async ({ port = 3000, host = 'localhost' }) => {
       }
     },
   });
-
   await server.start();
-  console.log('Server running on %s', server.info.uri);
+
+  logger.info({ message: `${process.env.NODE_ENV || 'development'} server running on port ${server.info.port}` });
+
   return server;
 };
 
-process.on('unhandledRejection', (err) => {
-  logger.error(err);
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error({ message: 'Unhandled rejection', reason, promise });
+  // Application specific logging, throwing an error, or other logic here
   process.exit(1);
 });
 
