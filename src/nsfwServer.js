@@ -23,7 +23,19 @@ const nsfwServer = async () => {
 
   await server.register({
     plugin: laabr,
-    options: {},
+    options: {
+      formats: {
+        onPostStart: ':time :start :level :message on port :host[port]',
+        onPostStop: ':time :stop :level :message',
+        response: ':time :method :remoteAddress :url < :blurb > :status :payload (:responseTime ms)',
+      },
+      tokens: {
+        start: () => '[start]',
+        stop: () => '[stop]',
+        blurb: (data) => data,
+      },
+      indent: 0,
+    },
   });
 
   // TODO: offline loading / self hosting
