@@ -7,12 +7,10 @@ const axios = require('axios');
 const tf = require('@tensorflow/tfjs-node');
 const nsfw = require('nsfwjs');
 const laabr = require('laabr');
-const logger = require('./logger');
 const nsfwjsVersion = require('./nsfwVersion');
 
 if (process.env.NODE_ENV === 'production') {
   tf.enableProdMode();
-  logger.info('Tensorflow production mode enabled');
 }
 
 const nsfwServer = async () => {
@@ -24,17 +22,13 @@ const nsfwServer = async () => {
   await server.register({
     plugin: laabr,
     options: {
+      hapiPino: {
+        logQueryParams: true,
+      },
       formats: {
-        onPostStart: ':time :start :level :message on port :host[port]',
-        onPostStop: ':time :stop :level :message',
-        response: ':time :method :remoteAddress :url < :blurb > :status :payload (:responseTime ms)',
+        onPostStart: ':time :level :message on port :host[port]',
+        response: ':time :level :remoteAddress :method :url :get[queryParams] :status (:responseTime ms)',
       },
-      tokens: {
-        start: () => '[start]',
-        stop: () => '[stop]',
-        blurb: (data) => data,
-      },
-      indent: 0,
     },
   });
 
@@ -45,8 +39,6 @@ const nsfwServer = async () => {
     method: 'GET',
     path: '/',
     handler() {
-      logger.info('/ received');
-
       return 'This is the "Not suitable for work" server';
     },
   });
@@ -57,8 +49,8 @@ const nsfwServer = async () => {
     handler: async (request, h) => {
       const { url } = request.query;
 
-      if (url === undefined) {
-        return Boom.badRequest('no url specified');
+      if (!url) {
+        return Boom.badRequest('no url specified'); // 400
       }
 
       let axiosResponse;
@@ -68,12 +60,11 @@ const nsfwServer = async () => {
         });
       } catch (error) {
         const message = `Error fetching data for ${url} - got code ${error.toJSON().status}`;
-        logger.error({ request: request.url, code: 503, message });
         return Boom.serverUnavailable(message);
       }
 
       if (axiosResponse.status >= 400) {
-        return Boom.badRequest('bad url response');
+        return Boom.badRequest('bad url response'); // 400
       }
 
       try {
@@ -81,7 +72,6 @@ const nsfwServer = async () => {
         const classification = await model.classify(decodedImage);
         decodedImage.dispose();
 
-        logger.info({ message: request.url });
         return h.response({
           classification: Object.fromEntries(classification.map(
             (entry) => [entry.className.toLowerCase(), entry.probability],
@@ -89,20 +79,17 @@ const nsfwServer = async () => {
           nsfwjsVersion,
         }).code(200);
       } catch (error) {
-        logger.error({ request: request.url, code: 415, message: error.message });
         return Boom.unsupportedMediaType(error); // 415
       }
     },
   });
   await server.start();
 
-  logger.info({ message: `${process.env.NODE_ENV || 'development'} server running on port ${server.info.port}` });
-
   return server;
 };
 
 process.on('unhandledRejection', (reason, promise) => {
-  logger.error({ message: 'Unhandled rejection', reason, promise });
+  console.error({ message: 'Unhandled rejection', reason, promise });
   // Application specific logging, throwing an error, or other logic here
   process.exit(1);
 });
