@@ -1,6 +1,9 @@
 # nsfw-server
 A simple node.js server to run [nsfw.js](https://nsfwjs.com/) for images and return its results.
 
+CodeClimate:
+<a href="https://codeclimate.com/github/ooade/NextSimpleStarter/test_coverage"><img src="https://api.codeclimate.com/v1/badges/a5551f40b263ba2c3764/test_coverage" /></a>
+
 ## getting started
 ### install:
 `npm i`
