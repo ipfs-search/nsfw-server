@@ -6,6 +6,7 @@ const Boom = require('@hapi/boom');
 const axios = require('axios');
 const tf = require('@tensorflow/tfjs-node');
 const nsfw = require('nsfwjs');
+const laabr = require('laabr');
 const logger = require('./logger');
 const nsfwjsVersion = require('./nsfwVersion');
 
@@ -18,6 +19,11 @@ const nsfwServer = async () => {
   const server = Hapi.server({
     port: process.env.PORT || 3000,
     host: process.env.HOST || 'localhost',
+  });
+
+  await server.register({
+    plugin: laabr,
+    options: {},
   });
 
   // TODO: offline loading / self hosting
@@ -37,7 +43,6 @@ const nsfwServer = async () => {
     method: 'GET',
     path: '/classify',
     handler: async (request, h) => {
-      logger.info({ method: 'GET', message: request.url });
       const { url } = request.query;
 
       if (url === undefined) {
@@ -51,7 +56,7 @@ const nsfwServer = async () => {
         });
       } catch (error) {
         const message = `Error fetching data for ${url} - got code ${error.toJSON().status}`;
-        logger.error({ code: 503, message });
+        logger.error({ request: request.url, code: 503, message });
         return Boom.serverUnavailable(message);
       }
 
@@ -64,6 +69,7 @@ const nsfwServer = async () => {
         const classification = await model.classify(decodedImage);
         decodedImage.dispose();
 
+        logger.info({ message: request.url });
         return h.response({
           classification: Object.fromEntries(classification.map(
             (entry) => [entry.className.toLowerCase(), entry.probability],
@@ -71,7 +77,7 @@ const nsfwServer = async () => {
           nsfwjsVersion,
         }).code(200);
       } catch (error) {
-        logger.error({ request: request.url, errorMessage: error.message });
+        logger.error({ request: request.url, code: 415, message: error.message });
         return Boom.unsupportedMediaType(error); // 415
       }
     },
