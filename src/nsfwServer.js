@@ -19,6 +19,15 @@ const nsfwServer = async () => {
     host: process.env.HOST || 'localhost',
   });
 
+  server.ext('onPreResponse', ({ response }, h) => {
+    if (response.isBoom) {
+      response.output.headers['Access-Control-Allow-Origin'] = '*';
+    } else {
+      response.header('Access-Control-Allow-Origin', '*');
+    }
+    return h.continue;
+  });
+
   await server.register({
     plugin: laabr,
     options: {
