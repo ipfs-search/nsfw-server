@@ -41,4 +41,3 @@ dev/prod server runs on port 3000 by default. To change this, set PORT environme
 `/classify/<CID>`
 
 get the NSFW classification for the image located by CID on IPFS
-
