@@ -1,8 +1,10 @@
 # nsfw-server
-A simple node.js server to run [nsfw.js](https://nsfwjs.com/) for images and return its results.
+[![Maintainability](https://api.codeclimate.com/v1/badges/21a5f471fb41d6c57eec/maintainability)](https://codeclimate.com/github/ipfs-search/nsfw-server/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/21a5f471fb41d6c57eec/test_coverage)](https://codeclimate.com/github/ipfs-search/nsfw-server/test_coverage)
+[![Backers on Open Collective](https://opencollective.com/ipfs-search/backers/badge.svg)](#backers)
+[![Sponsors on Open Collective](https://opencollective.com/ipfs-search/sponsors/badge.svg)](#sponsors)
 
-CodeClimate:
-<a href="https://codeclimate.com/github/ooade/NextSimpleStarter/test_coverage"><img src="https://api.codeclimate.com/v1/badges/a5551f40b263ba2c3764/test_coverage" /></a>
+A simple node.js server to run [nsfw.js](https://nsfwjs.com/) for images and return its results.
 
 ## getting started
 ### install:
