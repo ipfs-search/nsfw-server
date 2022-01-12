@@ -33,6 +33,6 @@ dev/prod server runs on port 3000 by default. To change this, set PORT environme
 
 ## usage/api
 
-`/classify?url=<imageURL>`
+`/classify/<CID>`
 
-get the NSFW classification for the image given by imageURL 
+get the NSFW classification for the image located by CID on IPFS
