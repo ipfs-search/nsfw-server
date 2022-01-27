@@ -1,4 +1,5 @@
 # nsfw-server
+[![Pipeline Status](https://gitlab.com/ipfs-search.com/nsfw-server/badges/main/pipeline.svg)](https://gitlab.com/ipfs-search.com/nsfw-server/-/commits/main)
 [![Maintainability](https://api.codeclimate.com/v1/badges/21a5f471fb41d6c57eec/maintainability)](https://codeclimate.com/github/ipfs-search/nsfw-server/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/21a5f471fb41d6c57eec/test_coverage)](https://codeclimate.com/github/ipfs-search/nsfw-server/test_coverage)
 [![Backers on Open Collective](https://opencollective.com/ipfs-search/backers/badge.svg)](#backers)
