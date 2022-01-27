@@ -1,20 +1,17 @@
-FROM node:16-buster
+FROM node:lts AS build
 
-# Create app directory
-WORKDIR /usr/src/app
+RUN apt-get install python3
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY package*.json ./
+WORKDIR /src
+COPY ./package* ./
 
-RUN npm install
-# If you are building your code for production
-# RUN npm ci --only=production
+RUN npm ci --only=production
 
-# Bundle app source
 COPY . .
 
 EXPOSE 3000
+USER node
+ENV HOST=0.0.0.0
 
-CMD [ "npm", "start" ]
+CMD ["start"]
+ENTRYPOINT ["npm"]
