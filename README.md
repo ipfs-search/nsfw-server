@@ -11,11 +11,11 @@ A simple node.js server to run [nsfw.js](https://nsfwjs.com/) for images and ret
 `npm i`
 
 ### run:
-`npm start`
+`npm run-script serve`
 
 run production mode:
 
-`NODE_ENV=production npm start`
+`node runServer.js`
 
 dev/prod server runs on port 3000 by default. To change this, set PORT environment variable, like so:
 
@@ -36,3 +36,4 @@ dev/prod server runs on port 3000 by default. To change this, set PORT environme
 `/classify/<CID>`
 
 get the NSFW classification for the image located by CID on IPFS
+
