@@ -1,3 +1,8 @@
+/*
+Next line opens .env.test or .env.production, which are included in the repo.
+While this is not customary to do, it facilitates testing.
+Local env settings can be passed (through docker) in the call
+*/
 // eslint-disable-next-line no-unused-expressions,global-require
 process.env.NODE_ENV && require('dotenv').config({ path: `./.env.${process.env.NODE_ENV}` });
 
