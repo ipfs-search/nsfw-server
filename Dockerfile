@@ -1,4 +1,4 @@
-FROM node:lts AS build
+FROM node:16-buster AS build
 
 RUN apt-get install python3
 
