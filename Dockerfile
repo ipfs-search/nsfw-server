@@ -1,20 +1,19 @@
-FROM node:16-buster
+FROM node:16-buster-slim AS build
 
-# Create app directory
-WORKDIR /usr/src/app
+RUN apt-get update && apt-get -y dist-upgrade
+RUN apt-get install -y build-essential python3
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY package*.json ./
+WORKDIR /src
+COPY ./package* ./
 
-RUN npm install
-# If you are building your code for production
-# RUN npm ci --only=production
+RUN npm ci --only=production
 
-# Bundle app source
+# TODO; separate build and run layer
 COPY . .
 
 EXPOSE 3000
+USER node
+ENV HOST=0.0.0.0
 
-CMD [ "npm", "start" ]
+CMD ["runServer.js"]
+ENTRYPOINT ["node"]
