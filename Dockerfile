@@ -1,12 +1,14 @@
-FROM node:16-buster AS build
+FROM node:16-buster-slim AS build
 
-RUN apt-get install python3
+RUN apt-get update && apt-get -y dist-upgrade
+RUN apt-get install -y build-essential python3
 
 WORKDIR /src
 COPY ./package* ./
 
 RUN npm ci --only=production
 
+# TODO; separate build and run layer
 COPY . .
 
 EXPOSE 3000
