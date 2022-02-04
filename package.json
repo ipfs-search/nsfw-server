@@ -4,8 +4,9 @@
   "description": "A simple server to return nsfw.js results for images",
   "main": "src/nsfwServer.js",
   "scripts": {
-    "test": "npx jest --watch",
-    "start": "nodemon runServer.js"
+    "test": "npx jest",
+    "dev": "nodemon runServer.js",
+    "start": "node runServer.js"
   },
   "repository": {
     "type": "git",
@@ -18,7 +19,7 @@
   },
   "homepage": "https://github.com/ipfs-search/nsfw-server#readme",
   "engines": {
-    "node": "=16.13.1"
+    "node": "16.x"
   },
   "devDependencies": {
     "@hapi/inert": "^6.0.4",
