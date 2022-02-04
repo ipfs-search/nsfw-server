@@ -30,7 +30,6 @@
   },
   "dependencies": {
     "@hapi/boom": "^9.1.4",
-    "@hapi/hapi": "^20.2.1",
     "@tensorflow/tfjs-node": "^3.11.0",
     "axios": "^0.24.0",
     "dotenv": "^10.0.0",
