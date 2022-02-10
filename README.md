@@ -10,7 +10,7 @@ A simple node.js server to run [nsfw.js](https://nsfwjs.com/) for images on IPFS
 ## Requirements
 * Node 16.x (LTS)
 * Python (Windows / Mac OS X Requires Python 2.7)
-* [Running IPFS daemon](https://docs.ipfs.io/how-to/command-line-quick-start/#command-line-quick-start) or [public IPFS gateway](https://docs.ipfs.io/concepts/ipfs-gateway/#gateway-providers) (not recommended)
+* [Running IPFS daemon](https://docs.ipfs.io/how-to/command-line-quick-start/#command-line-quick-start) or [public IPFS gateway](https://docs.ipfs.io/concepts/ipfs-gateway/#gateway-providers) (not recommended, can be configured with environment variable)
 
 ## Getting started
 ### Install Node dependencies

@@ -18,8 +18,6 @@ const nsfw = require('nsfwjs');
 const Boom = require('@hapi/boom');
 const nsfwjsVersion = require('./nsfwVersion');
 
-// const ipfs = ipfsClient.create(process.env.IPFS_API || 'http://localhost:5001');
-
 const ipfsGateway = process.env.IPFS_GATEWAY || 'http://127.0.0.1:8080';
 
 const server = async () => {
