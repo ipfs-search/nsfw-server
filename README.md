@@ -5,13 +5,14 @@
 [![Backers on Open Collective](https://opencollective.com/ipfs-search/backers/badge.svg)](#backers)
 [![Sponsors on Open Collective](https://opencollective.com/ipfs-search/sponsors/badge.svg)](#sponsors)
 
-A simple node.js server to run [nsfw.js](https://nsfwjs.com/) for images and return its results.
+A simple node.js server to run [nsfw.js](https://nsfwjs.com/) for images on IPFS.
 
 ## Requirements
 * Node 16.x (LTS)
-* Python (Windows / Mac OS X Requires Python 2.7, )
+* Python (Windows / Mac OS X Requires Python 2.7)
+* [Running IPFS daemon](https://docs.ipfs.io/how-to/command-line-quick-start/#command-line-quick-start) or [public IPFS gateway](https://docs.ipfs.io/concepts/ipfs-gateway/#gateway-providers) (not recommended)
 
-## getting started
+## Getting started
 ### Install Node dependencies:
 `npm install`
 
@@ -42,3 +43,9 @@ dev/prod server runs on port 3000 by default. To change this, set PORT environme
 
 get the NSFW classification for the image located by CID on IPFS
 
+## Configuration
+nsfw-server is configured through the following environment variables:
+* `IPFS_GATEWAY`: Gateway to use for loading images. Defaults to `http://localhost:8080` (local node).
+* `PORT`: Port to run server on. Defaults to `3000`.
+* `DEBUG`: [Debug](https://www.npmjs.com/package/debug) verbosity level.
+* `NODE_ENV`: Node environment. Set to `production` in ... production. Defaults to `development`.
