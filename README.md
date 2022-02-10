@@ -16,7 +16,7 @@ A simple node.js server to run [nsfw.js](https://nsfwjs.com/) for images and ret
 `npm install`
 
 ### Run (auto-reloading) dev server
-`npm run-script dev`
+`env DEBUG=* npm run-script dev`
 
 Run in production mode:
 
