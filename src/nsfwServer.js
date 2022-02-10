@@ -14,6 +14,7 @@ const axios = require('axios');
 const tf = require('@tensorflow/tfjs-node');
 const nsfw = require('nsfwjs');
 const Boom = require('@hapi/boom');
+const fs = require('fs');
 const nsfwjsVersion = require('./nsfwVersion');
 
 // const ipfs = ipfsClient.create(process.env.IPFS_API || 'http://localhost:5001');
