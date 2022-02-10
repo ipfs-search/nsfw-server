@@ -5,30 +5,54 @@
 [![Backers on Open Collective](https://opencollective.com/ipfs-search/backers/badge.svg)](#backers)
 [![Sponsors on Open Collective](https://opencollective.com/ipfs-search/sponsors/badge.svg)](#sponsors)
 
-A simple node.js server to run [nsfw.js](https://nsfwjs.com/) for images and return its results.
+A simple node.js server to run [nsfw.js](https://nsfwjs.com/) for images on IPFS.
 
 ## Requirements
 * Node 16.x (LTS)
-* Python (Windows / Mac OS X Requires Python 2.7, )
+* Python (Windows / Mac OS X Requires Python 2.7)
+* [Running IPFS daemon](https://docs.ipfs.io/how-to/command-line-quick-start/#command-line-quick-start) or [public IPFS gateway](https://docs.ipfs.io/concepts/ipfs-gateway/#gateway-providers) (not recommended)
 
-## getting started
-### Install Node dependencies:
+## Getting started
+### Install Node dependencies
 `npm install`
 
-### Run (auto-reloading) dev server
+### Start IPFS node
+In a separate terminal, after installing a local IPFS daemon (see requirements):
+`ipfs daemon`
+
+### Start server
+Run (auto-reloading) dev server with full debug enabled:
 `env DEBUG=* npm run-script dev`
 
+### Example usage
+
+```sh
+$ curl -s http://localhost:3000/classify/bafkreiam7vh2raw2chmx6gllup6sd32xsicwus2riglpjtzlygz4lzmxbm | jq
+```
+(Wait a while... IPFS is slow. :/)
+
+```json
+{
+  "classification": {
+    "neutral": 0.9980410933494568,
+    "drawing": 0.001135041005909443,
+    "porn": 0.00050011818530038,
+    "hentai": 0.00016194644558709115,
+    "sexy": 0.00016178081568796188
+  },
+  "nsfwjsVersion": "2.4.1"
+}
+```
+
+### Production server
 Run in production mode:
 
-`env NODE_ENV=production npm start`
-
-dev/prod server runs on port 3000 by default. To change this, set PORT environment variable, like so:
-
-`PORT=707 npm start`
+`env NODE_ENV=production PORT=3342 npm start`
 
 ### Run tests
 `npm test`
 
+## Docker support
 ### Build docker image (tagged as `nsfw-server`)
 
 `docker build -t nsfw-server .`
@@ -36,9 +60,18 @@ dev/prod server runs on port 3000 by default. To change this, set PORT environme
 ### Run docker image in production on port 9000
 `docker run --env NODE_ENV=production -p 9000:3000 -t nsfw-server`
 
-## Usage/api
+## API
+To classify an [IPLD CID](https://docs.ipfs.io/concepts/content-addressing/):
 
-`/classify/<CID>`
+`/classify/<cid>`
 
-get the NSFW classification for the image located by CID on IPFS
+## Supported formats
+We're using TensorFlow's [decodeImage](https://js.tensorflow.org/api_node/1.2.7/#node.decodeImage), which detects and supports BMP, GIF, JPEG and PNG formats.
 
+## Configuration
+nsfw-server is configured through the following environment variables:
+* `IPFS_GATEWAY`: Gateway to use for loading images. Defaults to `http://localhost:8080` (local node).
+* `PORT`: Port to run server on. Defaults to `3000`.
+* `DEBUG`: [Debug](https://www.npmjs.com/package/debug) verbosity level.
+* `NODE_ENV`: Node environment. Set to `production` in ... production. Defaults to `development`.
+* `NSFW_MODEL`: NSFW model to use.
