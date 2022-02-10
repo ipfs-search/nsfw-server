@@ -7,14 +7,15 @@ Local env settings can be passed (through docker) in the call
 process.env.NODE_ENV && require('dotenv').config({ path: `./.env.${process.env.NODE_ENV}` });
 
 const express = require('express');
+const cors = require('cors');
 const pino = require('pino-http')();
+
 const { CID } = require('multiformats');
 
 const axios = require('axios');
 const tf = require('@tensorflow/tfjs-node');
 const nsfw = require('nsfwjs');
 const Boom = require('@hapi/boom');
-const fs = require('fs');
 const nsfwjsVersion = require('./nsfwVersion');
 
 // const ipfs = ipfsClient.create(process.env.IPFS_API || 'http://localhost:5001');
@@ -24,6 +25,7 @@ const ipfsGateway = process.env.IPFS_GATEWAY || 'http://127.0.0.1:8080';
 const server = async () => {
   const app = express();
   app.use(pino);
+  app.use(cors());
 
   // TODO: offline loading / self hosting
   const model = await nsfw.load(process.env.NSFW_MODEL);
@@ -31,8 +33,6 @@ const server = async () => {
   app.get('/classify/:cid', async (req, res) => {
     const { cid } = req.params;
     const url = `${ipfsGateway}/ipfs/${cid}`;
-
-    console.log(`Classifying ${cid}`);
 
     try {
       CID.parse(cid);
@@ -60,7 +60,6 @@ const server = async () => {
       const classification = await model.classify(decodedImage);
       decodedImage.dispose();
 
-      console.log(`classification for ${cid}:`, classification);
       return res.status(200).send({
         classification: Object.fromEntries(classification.map(
           (entry) => [entry.className.toLowerCase(), entry.probability],
