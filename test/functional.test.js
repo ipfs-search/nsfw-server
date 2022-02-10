@@ -1,5 +1,9 @@
+const axios = require('axios');
+const fs = require('fs');
 const request = require('supertest');
 const NsfwServer = require('../src/nsfwServer');
+
+jest.mock('axios');
 
 let nsfwServer;
 
@@ -8,9 +12,15 @@ beforeAll(async () => {
 });
 
 describe('mozilla grapefruit jpg', () => {
+  axios.get.mockResolvedValueOnce({
+    data: fs.readFileSync(`${__dirname}/../test/grapefruit.jpg`),
+    status: 200,
+  });
+
+  // this CID can be anything for this test
   const grapefruitCid = 'QmYasLHeFsRRY51xbBo6JfA2HegBEXhM3WL85S3Xfixr5d';
 
-  it('should return a 200 status code', () => request(nsfwServer)
+  it('should return classification properties when image file is found', () => request(nsfwServer)
     .get(`/classify/${grapefruitCid}`)
     .expect(200)
     .expect(({ body }) => {
