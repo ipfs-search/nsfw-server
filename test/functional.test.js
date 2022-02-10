@@ -1,62 +1,50 @@
+const axios = require('axios');
+const fs = require('fs');
 const request = require('supertest');
-
-const Hapi = require('@hapi/hapi');
-const Inert = require('@hapi/inert');
 const NsfwServer = require('../src/nsfwServer');
+
+jest.mock('axios');
 
 let nsfwServer;
 
-// https://dustinpfister.github.io/2017/10/01/hapi-static-file-server/
-const staticServer = new Hapi.server({
-  port: 7327,
-});
-
 beforeAll(async () => {
   nsfwServer = await NsfwServer();
-
-  await staticServer.register(Inert);
-  staticServer.route({ method: 'GET', path: '/{param*}', handler: { directory: { path: __dirname } } });
-  staticServer.start();
 });
 
 describe('mozilla grapefruit jpg', () => {
-  const grapefruitURL = 'http://localhost:7327/grapefruit.jpg';
-  it('should return a 200 status code', (done) => {
-    request(nsfwServer.listener)
-      .get(`/classify?url=${grapefruitURL}`)
-      .expect(200)
-      .expect(({ body }) => {
-        expect(body.nsfwjsVersion).toBeTruthy();
-        expect(body).toHaveProperty('classification.hentai');
-        expect(body).toHaveProperty('classification.neutral');
-        expect(body).toHaveProperty('classification.porn');
-        expect(body).toHaveProperty('classification.drawing');
-        expect(body).toHaveProperty('classification.sexy');
-      })
-      .end(done);
+  axios.get.mockResolvedValueOnce({
+    data: fs.readFileSync(`${__dirname}/../test/grapefruit.jpg`),
+    status: 200,
   });
+
+  // this CID can be anything for this test
+  const grapefruitCid = 'QmYasLHeFsRRY51xbBo6JfA2HegBEXhM3WL85S3Xfixr5d';
+
+  it('should return classification properties when image file is found', () => request(nsfwServer)
+    .get(`/classify/${grapefruitCid}`)
+    .expect(200)
+    .expect(({ body }) => {
+      expect(body.nsfwjsVersion).toBeTruthy();
+      expect(body).toHaveProperty('classification.hentai');
+      expect(body).toHaveProperty('classification.neutral');
+      expect(body).toHaveProperty('classification.porn');
+      expect(body).toHaveProperty('classification.drawing');
+      expect(body).toHaveProperty('classification.sexy');
+    }));
 });
 
-describe('no url specified', () => {
-  it('should return a 400 status code', (done) => {
-    request(nsfwServer.listener)
-      .get('/classify')
-      .expect(400)
-      .end(done);
-  });
-});
+describe('bad input', () => {
+  test('without CID it should return 404 - not found', () => request(nsfwServer)
+    .get('/classify/')
+    .expect(404));
 
-describe('axios 404', () => {
-  const grapefruitURL = 'http://localhost:7327/i_never_existed';
-  it('should return 503 - bad gateway', (done) => {
-    request(nsfwServer.listener)
-      .get(`/classify?url=${grapefruitURL}`)
-      .expect(503)
-      .end(done);
-  });
-});
+  const badInput = 'Bad Input';
+  test('anything else than a cid should return 400 - bad request', () => request(nsfwServer)
+    .get(`/classify/${badInput}`)
+    .expect(400));
 
-afterAll(() => {
-  nsfwServer.stop();
-  staticServer.stop();
+  const badGrapefruitCid = 'QmYasLHeFsRRY51xbBo6JfA2HegBEXhM3WL85S3Xfixr5e';
+  test('bad cid should give 400', () => request(nsfwServer)
+    .get(`/classify/${badInput}`)
+    .expect(400));
 });
