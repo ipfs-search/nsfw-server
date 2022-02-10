@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  nsfw-server:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      ipfs:
+        condition: service_healthy
+    environment:
+      IPFS_API: http://ipfs:5001
+    deploy:
+      restart_policy:
+        condition: on-failure
+  ipfs:
+    image: ipfs/go-ipfs
+    healthcheck:
+      test: ["CMD", "ipfs", "swarm", "addrs"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      restart_policy:
+        condition: on-failure
