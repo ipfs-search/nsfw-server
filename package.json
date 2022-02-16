@@ -25,6 +25,10 @@
     "@hapi/inert": "^6.0.4",
     "eslint": "^8.3.0",
     "eslint-config-airbnb": "^19.0.1",
+    "eslint-plugin-import": ">=2.25.3 <3.0.0",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
     "jest": "^27.4.3",
     "node-static": "^0.7.11",
     "supertest": "^6.1.6"
