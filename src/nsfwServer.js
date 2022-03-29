@@ -12,21 +12,18 @@ const { CID } = require('multiformats');
 
 const axios = require('axios');
 const tf = require('@tensorflow/tfjs-node');
-const nsfw = require('nsfwjs');
 const Boom = require('@hapi/boom');
-const fs = require('fs');
-const nsfwjsVersion = require('./nsfwVersion');
 
-// const ipfs = ipfsClient.create(process.env.IPFS_API || 'http://localhost:5001');
+const nsfw = require('./model');
 
 const ipfsGateway = process.env.IPFS_GATEWAY || 'http://127.0.0.1:8080';
 
 const server = async () => {
+  console.log('IPFS gateway:', ipfsGateway);
   const app = express();
   app.use(pino);
 
-  // TODO: offline loading / self hosting
-  const model = await nsfw.load(process.env.NSFW_MODEL);
+  const { model, modelCid } = await nsfw();
 
   app.get('/classify/:cid', async (req, res) => {
     const { cid } = req.params;
@@ -40,7 +37,6 @@ const server = async () => {
       console.log(`Bad CID ${cid}`);
       return res.status(400).send('Bad input');
     }
-
     let axiosResponse;
     try {
       axiosResponse = await axios.get(url, {
@@ -65,7 +61,7 @@ const server = async () => {
         classification: Object.fromEntries(classification.map(
           (entry) => [entry.className.toLowerCase(), entry.probability],
         )),
-        nsfwjsVersion,
+        modelCid,
       });
     } catch (error) {
       return Boom.unsupportedMediaType(error); // 415

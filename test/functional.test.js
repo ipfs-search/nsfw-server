@@ -1,9 +1,16 @@
 const axios = require('axios');
+
 const fs = require('fs');
 const request = require('supertest');
 const NsfwServer = require('../src/nsfwServer');
 
 jest.mock('axios');
+jest.mock('ipfs', () => ({
+  ...jest.requireActual('ipfs'),
+  create: () => Promise.resolve({
+    addAll: () => [{ path: 'quant_mid', cid: 'mocked model CID' }],
+  }),
+}));
 
 let nsfwServer;
 
@@ -24,7 +31,7 @@ describe('mozilla grapefruit jpg', () => {
     .get(`/classify/${grapefruitCid}`)
     .expect(200)
     .expect(({ body }) => {
-      expect(body.nsfwjsVersion).toBeTruthy();
+      expect(body.modelCid).toBe('mocked model CID');
       expect(body).toHaveProperty('classification.hentai');
       expect(body).toHaveProperty('classification.neutral');
       expect(body).toHaveProperty('classification.porn');
