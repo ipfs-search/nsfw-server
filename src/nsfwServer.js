@@ -19,8 +19,6 @@ const nsfwModel = require('./model');
 
 const ipfsGateway = process.env.IPFS_GATEWAY || 'http://127.0.0.1:8080';
 
-const badInputError = 400;
-
 const server = async () => {
   pino.logger.info(`IPFS gateway: ${ipfsGateway}`);
   const app = express();
@@ -29,65 +27,48 @@ const server = async () => {
 
   const { model, modelCid } = await nsfwModel();
 
-  app.get('/classify/:cid', async (req, res, next) => {
+  app.get('/classify/:cid', (req, res, next) => {
     const { cid } = req.params;
     const url = `${ipfsGateway}/ipfs/${cid}`;
 
     try {
       CID.parse(cid);
     } catch (e) {
-      e.status = badInputError;
-      return next(e);
+      next({ status: 400, message: 'Bad CID input' });
+      return;
     }
-    /*
-    // TODO: turn it into this format:
-    axios.get(url, {
-      responseType: 'arraybuffer',
-    })
-      .then(response => {
-      //  ...
+
+    axios.get(url, { responseType: 'arraybuffer' })
+      .then(async (response) => {
+        try {
+          const decodedImage = await tf.node.decodeImage(response.data, 3);
+          const classification = await model.classify(decodedImage);
+          decodedImage.dispose();
+
+          res.status(200).send({
+            // simplify the classification output data:
+            classification: Object.fromEntries(classification.map(
+              (entry) => [entry.className.toLowerCase(), entry.probability],
+            )),
+            modelCid,
+          });
+          next();
+        } catch ({ message }) {
+          next({ status: 415, message }); // Unsupported media type
+        }
       })
-      .catch(error => {
-      //  ...
+      .catch((error) => {
+        if (error.response) {
+          next({ status: 404, message: `Error fetching ${url} - ${error.response.status}` });
+        } else if (error.request) {
+          next({ status: 503, message: 'Unable to fetch data' });
+        } else next({ status: 500, message: error.message });
       });
-    */
-    let axiosResponse;
-    try {
-      axiosResponse = await axios.get(url, {
-        responseType: 'arraybuffer',
-      });
-    } catch (error) {
-      pino.logger.debug(error);
-      if (error.response) {
-        const message = `Error fetching ${url} - ${error.response.status}`;
-        return res.status(404).send(message);
-      }
-      if (error.request) {
-        return res.status(503).send('Unable to fetch data');
-      }
-      return res.status(500).send(error.message);
-    }
-
-    try {
-      const decodedImage = await tf.node.decodeImage(axiosResponse.data, 3);
-      const classification = await model.classify(decodedImage);
-      decodedImage.dispose();
-
-      return res.status(200).send({
-        classification: Object.fromEntries(classification.map(
-          (entry) => [entry.className.toLowerCase(), entry.probability],
-        )),
-        modelCid,
-      });
-    } catch (error) {
-      return res.status(415).send('CID points to unsupported media type');
-    }
   });
 
-  app.use(({ status, message }, req, res, next) => {
-    res.status(status).send(message);
-    next();
-  });
+  // Error handling:
+  // eslint-disable-next-line no-unused-vars
+  app.use(({ status, message }, req, res, next) => res.status(status).send(message));
 
   return app;
 };
