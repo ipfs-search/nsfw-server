@@ -14,9 +14,8 @@ const { CID } = require('ipfs');
 
 const axios = require('axios');
 const tf = require('@tensorflow/tfjs-node');
-const Boom = require('@hapi/boom');
 
-const nsfw = require('./model');
+const nsfwModel = require('./model');
 
 const ipfsGateway = process.env.IPFS_GATEWAY || 'http://127.0.0.1:8080';
 
@@ -26,7 +25,7 @@ const server = async () => {
   app.use(pino);
   app.use(cors());
 
-  const { model, modelCid } = await nsfw();
+  const { model, modelCid } = await nsfwModel();
 
   app.get('/classify/:cid', async (req, res) => {
     const { cid } = req.params;
@@ -35,9 +34,9 @@ const server = async () => {
     try {
       CID.parse(cid);
     } catch (e) {
-      console.log(`Bad CID ${cid}`);
       return res.status(400).send('Bad input');
     }
+
     let axiosResponse;
     try {
       axiosResponse = await axios.get(url, {
@@ -45,11 +44,11 @@ const server = async () => {
       });
     } catch (error) {
       const message = `Error fetching ${url} - ${error.toJSON().status}`;
-      return Boom.serverUnavailable(message);
+      return res.status(503).send(message);
     }
 
     if (axiosResponse.status >= 400) {
-      return Boom.badRequest('bad url response'); // 400
+      return res.status(400).send('bad url response');
     }
 
     try {
@@ -64,7 +63,7 @@ const server = async () => {
         modelCid,
       });
     } catch (error) {
-      return Boom.unsupportedMediaType(error); // 415
+      return res.status(415).send('CID points to unsupported media type');
     }
   });
 

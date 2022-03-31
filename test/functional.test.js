@@ -18,14 +18,12 @@ beforeAll(async () => {
   nsfwServer = await NsfwServer();
 });
 
+const grapefruitCid = 'QmYasLHeFsRRY51xbBo6JfA2HegBEXhM3WL85S3Xfixr5d';
 describe('mozilla grapefruit jpg', () => {
   axios.get.mockResolvedValueOnce({
     data: fs.readFileSync(`${__dirname}/../test/grapefruit.jpg`),
     status: 200,
   });
-
-  // this CID can be anything for this test
-  const grapefruitCid = 'QmYasLHeFsRRY51xbBo6JfA2HegBEXhM3WL85S3Xfixr5d';
 
   it('should return classification properties when image file is found', () => request(nsfwServer)
     .get(`/classify/${grapefruitCid}`)
@@ -50,8 +48,11 @@ describe('bad input', () => {
     .get(`/classify/${badInput}`)
     .expect(400));
 
-  const badGrapefruitCid = 'QmYasLHeFsRRY51xbBo6JfA2HegBEXhM3WL85S3Xfixr5e';
-  test('bad cid should give 400', () => request(nsfwServer)
-    .get(`/classify/${badInput}`)
-    .expect(400));
+  axios.get.mockResolvedValueOnce({
+    data: fs.readFileSync(`${__dirname}/../test/functional.test.js`),
+    status: 200,
+  });
+  test('unsupported media should return 415', () => request(nsfwServer)
+    .get(`/classify/${grapefruitCid}`)
+    .expect(415));
 });
