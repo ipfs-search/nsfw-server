@@ -20,7 +20,6 @@ module.exports = async () => ({
       for await (const file of ipfs.addAll(globSource(modelsDirectory, `${modelFile}/*`))) {
         if (file.path === modelFile) cid = file.cid;
       }
-      console.debug('model CID:', cid);
       return cid.toString();
     }),
 });

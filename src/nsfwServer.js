@@ -20,7 +20,7 @@ const nsfwModel = require('./model');
 const ipfsGateway = process.env.IPFS_GATEWAY || 'http://127.0.0.1:8080';
 
 const server = async () => {
-  console.log('IPFS gateway:', ipfsGateway);
+  pino.logger.info(`IPFS gateway: ${ipfsGateway}`);
   const app = express();
   app.use(pino);
   app.use(cors());
@@ -47,6 +47,7 @@ const server = async () => {
       return res.status(503).send(message);
     }
 
+    // TODO: fix properly axios error handling; https://axios-http.com/docs/handling_errors
     if (axiosResponse.status >= 400) {
       return res.status(400).send('bad url response');
     }
