@@ -2,7 +2,6 @@ const { create, globSource } = require('ipfs');
 const nsfw = require('nsfwjs');
 
 const modelsDirectory = `${process.env.PWD}/models`;
-
 // const modelFile = 'quant_nsfw_mobilenet';
 // const modelOptions = {};
 

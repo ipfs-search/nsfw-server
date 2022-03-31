@@ -10,7 +10,7 @@ const express = require('express');
 const cors = require('cors');
 const pino = require('pino-http')();
 
-const { CID } = require('multiformats');
+const { CID } = require('ipfs');
 
 const axios = require('axios');
 const tf = require('@tensorflow/tfjs-node');

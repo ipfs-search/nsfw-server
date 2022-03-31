@@ -42,7 +42,6 @@
     "express": "^4.17.2",
     "ipfs": "^0.62.1",
     "laabr": "^6.1.3",
-    "multiformats": "^9.5.8",
     "nodemon": "^2.0.15",
     "nsfwjs": "^2.4.1",
     "pino-http": "^6.5.0",
