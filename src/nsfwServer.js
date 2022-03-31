@@ -19,6 +19,8 @@ const nsfwModel = require('./model');
 
 const ipfsGateway = process.env.IPFS_GATEWAY || 'http://127.0.0.1:8080';
 
+const badInputError = 400;
+
 const server = async () => {
   pino.logger.info(`IPFS gateway: ${ipfsGateway}`);
   const app = express();
@@ -27,29 +29,43 @@ const server = async () => {
 
   const { model, modelCid } = await nsfwModel();
 
-  app.get('/classify/:cid', async (req, res) => {
+  app.get('/classify/:cid', async (req, res, next) => {
     const { cid } = req.params;
     const url = `${ipfsGateway}/ipfs/${cid}`;
 
     try {
       CID.parse(cid);
     } catch (e) {
-      return res.status(400).send('Bad input');
+      e.status = badInputError;
+      return next(e);
     }
-
+    /*
+    // TODO: turn it into this format:
+    axios.get(url, {
+      responseType: 'arraybuffer',
+    })
+      .then(response => {
+      //  ...
+      })
+      .catch(error => {
+      //  ...
+      });
+    */
     let axiosResponse;
     try {
       axiosResponse = await axios.get(url, {
         responseType: 'arraybuffer',
       });
     } catch (error) {
-      const message = `Error fetching ${url} - ${error.toJSON().status}`;
-      return res.status(503).send(message);
-    }
-
-    // TODO: fix properly axios error handling; https://axios-http.com/docs/handling_errors
-    if (axiosResponse.status >= 400) {
-      return res.status(400).send('bad url response');
+      pino.logger.debug(error);
+      if (error.response) {
+        const message = `Error fetching ${url} - ${error.response.status}`;
+        return res.status(404).send(message);
+      }
+      if (error.request) {
+        return res.status(503).send('Unable to fetch data');
+      }
+      return res.status(500).send(error.message);
     }
 
     try {
@@ -66,6 +82,11 @@ const server = async () => {
     } catch (error) {
       return res.status(415).send('CID points to unsupported media type');
     }
+  });
+
+  app.use(({ status, message }, req, res, next) => {
+    res.status(status).send(message);
+    next();
   });
 
   return app;

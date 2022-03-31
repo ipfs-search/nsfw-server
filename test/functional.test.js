@@ -21,7 +21,7 @@ beforeAll(async () => {
 const grapefruitCid = 'QmYasLHeFsRRY51xbBo6JfA2HegBEXhM3WL85S3Xfixr5d';
 describe('mozilla grapefruit jpg', () => {
   axios.get.mockResolvedValueOnce({
-    data: fs.readFileSync(`${__dirname}/../test/grapefruit.jpg`),
+    data: fs.readFileSync(`${__dirname}/grapefruit.jpg`),
     status: 200,
   });
 
@@ -48,8 +48,18 @@ describe('bad input', () => {
     .get(`/classify/${badInput}`)
     .expect(400));
 
+  axios.get.mockRejectedValueOnce({ response: { status: 504 } });
+  test('ipfs timeout gives 404 error - resource unavailable', () => request(nsfwServer)
+    .get(`/classify/${grapefruitCid}`)
+    .expect(404));
+
+  axios.get.mockRejectedValueOnce({ request: { message: 'check firewall settings' } });
+  test('Server networking error causes 503 - service unavailable error', () => request(nsfwServer)
+    .get(`/classify/${grapefruitCid}`)
+    .expect(503));
+
   axios.get.mockResolvedValueOnce({
-    data: fs.readFileSync(`${__dirname}/../test/functional.test.js`),
+    data: fs.readFileSync(`${__dirname}/functional.test.js`),
     status: 200,
   });
   test('unsupported media should return 415', () => request(nsfwServer)
