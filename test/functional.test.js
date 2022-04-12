@@ -8,7 +8,7 @@ jest.mock('axios');
 jest.mock('ipfs', () => ({
   ...jest.requireActual('ipfs'),
   create: () => Promise.resolve({
-    addAll: () => [{ path: 'quant_mid', cid: 'mocked model CID' }],
+    addAll: () => [{ path: 'quant_nsfw_mobilenet', cid: 'mocked model CID' }],
   }),
 }));
 

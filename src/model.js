@@ -32,7 +32,7 @@ async function modelCid(modelFile) {
   for await (const file of ipfs.addAll(globSource(modelsDirectory, `${modelFile}/*`))) {
     if (file.path === modelFile) cid = file.cid;
   }
-  return cid.toString();
+  return cid?.toString();
 }
 module.exports = async ({ modelFile, modelOptions } = selectedModel) => ({
   model: await nsfw.load(`file://${modelsDirectory}/${modelFile}/`, modelOptions),

@@ -22,7 +22,11 @@ const ipfsGateway = process.env.IPFS_GATEWAY || 'http://127.0.0.1:8080';
 const server = async () => {
   pino.logger.info(`IPFS gateway: ${ipfsGateway}`);
   const app = express();
+  // Apparently on the server, it logs by default and there is no need for pino.
+  // Ideally it would also do that in development.
+  // For now, we add pino in development.
   if (process.env.NODE_ENV === 'development') app.use(pino);
+
   app.use(cors());
 
   const { model, modelCid } = await nsfwModel();
