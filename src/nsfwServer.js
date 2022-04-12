@@ -26,6 +26,7 @@ const server = async () => {
   app.use(cors());
 
   const { model, modelCid } = await nsfwModel();
+  console.log('model:', modelCid);
 
   app.get('/classify/:cid', (req, res, next) => {
     const { cid } = req.params;

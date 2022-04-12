@@ -1,6 +1,7 @@
-const { create, globSource } = this.process.env.IPFS_API_ADDRESS
-  ? require('ipfs')
-  : require('ipfs-http-client');
+const { create, globSource } = process.env.IPFS_API_ADDRESS
+  ? require('ipfs-http-client')
+  : require('ipfs');
+
 const nsfw = require('nsfwjs');
 
 const modelsDirectory = `${process.env.PWD}/models`;
@@ -20,19 +21,20 @@ const availableModels = [
 ];
 const selectedModel = availableModels[2];
 
-const ipfsCreateOptions = this.process.env.IPFS_API_ADDRESS
-  ? this.process.env.IPFS_API_ADDRESS
+const ipfsCreateOptions = process.env.IPFS_API_ADDRESS
+  ? new URL(process.env.IPFS_API_ADDRESS)
   : { offline: true, start: false };
 
+async function modelCid(modelFile) {
+  let cid;
+  const ipfs = await create(ipfsCreateOptions);
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const file of ipfs.addAll(globSource(modelsDirectory, `${modelFile}/*`))) {
+    if (file.path === modelFile) cid = file.cid;
+  }
+  return cid.toString();
+}
 module.exports = async ({ modelFile, modelOptions } = selectedModel) => ({
   model: await nsfw.load(`file://${modelsDirectory}/${modelFile}/`, modelOptions),
-  modelCid: await create(ipfsCreateOptions)
-    .then(async (ipfs) => {
-      let cid;
-      // eslint-disable-next-line no-restricted-syntax
-      for await (const file of ipfs.addAll(globSource(modelsDirectory, `${modelFile}/*`))) {
-        if (file.path === modelFile) cid = file.cid;
-      }
-      return cid.toString();
-    }),
+  modelCid: await modelCid(modelFile),
 });
