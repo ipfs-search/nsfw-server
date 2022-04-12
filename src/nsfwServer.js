@@ -22,7 +22,7 @@ const ipfsGateway = process.env.IPFS_GATEWAY || 'http://127.0.0.1:8080';
 const server = async () => {
   pino.logger.info(`IPFS gateway: ${ipfsGateway}`);
   const app = express();
-  app.use(pino);
+  if (process.env.NODE_ENV === 'development') app.use(pino);
   app.use(cors());
 
   const { model, modelCid } = await nsfwModel();
