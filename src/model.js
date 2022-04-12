@@ -19,7 +19,7 @@ const availableModels = [
     modelOptions: { type: 'graph' },
   },
 ];
-const selectedModel = availableModels[2];
+const selectedModel = availableModels[0];
 
 const ipfsCreateOptions = process.env.IPFS_API_ADDRESS
   ? new URL(process.env.IPFS_API_ADDRESS)
