@@ -1,6 +1,4 @@
-const { create, globSource } = process.env.IPFS_API_ADDRESS
-  ? require('ipfs-http-client')
-  : require('ipfs');
+const { create, globSource } = require('ipfs-core');
 
 const nsfw = require('nsfwjs');
 
@@ -19,19 +17,30 @@ const availableModels = [
     modelOptions: { type: 'graph' },
   },
 ];
-const selectedModel = availableModels[0];
+const selectedModel = availableModels[0]; // quant_nsfw_mobilenet
 
-const ipfsCreateOptions = process.env.IPFS_API_ADDRESS
-  ? new URL(process.env.IPFS_API_ADDRESS)
-  : { offline: true, start: false };
+const ipfsCreateOptions = {
+  offline: true,
+  start: false,
+  preload: {
+    enabled: false
+  },
+  init: {
+    emptyRepo: true,
+  },
+};
 
 async function modelCid(modelFile) {
   let cid;
   const ipfs = await create(ipfsCreateOptions);
+
   // eslint-disable-next-line no-restricted-syntax
   for await (const file of ipfs.addAll(globSource(modelsDirectory, `${modelFile}/*`))) {
     if (file.path === modelFile) cid = file.cid;
   }
+
+  await ipfs.stop();
+
   return cid?.toString();
 }
 module.exports = async ({ modelFile, modelOptions } = selectedModel) => ({
