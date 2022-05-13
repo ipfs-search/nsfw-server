@@ -5,10 +5,11 @@ const request = require('supertest');
 const NsfwServer = require('../src/nsfwServer');
 
 jest.mock('axios');
-jest.mock('ipfs', () => ({
-  ...jest.requireActual('ipfs'),
+jest.mock('ipfs-core', () => ({
+  ...jest.requireActual('ipfs-core'),
   create: () => Promise.resolve({
     addAll: () => [{ path: 'quant_nsfw_mobilenet', cid: 'mocked model CID' }],
+    stop: () => {},
   }),
 }));
 
