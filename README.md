@@ -70,7 +70,7 @@ We're using TensorFlow's [decodeImage](https://js.tensorflow.org/api_node/1.2.7/
 
 ## Configuration
 nsfw-server is configured through the following environment variables:
-* `IPFS_GATEWAY`: Gateway to use for loading images. Defaults to `http://localhost:8080` (local node).
+* `IPFS_GATEWAY_URL`: Gateway to use for loading images. Defaults to `http://localhost:8080` (local node).
 * `PORT`: Port to run server on. Defaults to `3000`.
 * `DEBUG`: [Debug](https://www.npmjs.com/package/debug) verbosity level.
 * `NODE_ENV`: Node environment. Set to `production` in ... production. Defaults to `development`.

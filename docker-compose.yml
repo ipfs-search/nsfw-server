@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  nsfw-server:
+    build: .
+    ports:
+      - 3000:3000
+    depends_on:
+      ipfs:
+        condition: service_healthy
+    environment:
+      IPFS_GATEWAY_URL: http://ipfs:8080
+    deploy:
+      restart_policy:
+        condition: on-failure
+  ipfs:
+    image: ipfs/kubo
+    ports:
+      - 4001:4001
+      - 5001:5001
+      - 8080:8080
+    deploy:
+      restart_policy:
+        condition: on-failure

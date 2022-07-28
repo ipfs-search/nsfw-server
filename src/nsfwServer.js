@@ -16,7 +16,7 @@ const tf = require('@tensorflow/tfjs-node');
 
 const nsfwModel = require('./model');
 
-const ipfsGateway = process.env.IPFS_GATEWAY || 'http://127.0.0.1:8080';
+const ipfsGateway = process.env.IPFS_GATEWAY_URL || 'http://127.0.0.1:8080';
 
 const server = async () => {
   console.log('IPFS gateway:', ipfsGateway);
@@ -34,7 +34,7 @@ const server = async () => {
     try {
       CID.parse(cid);
     } catch (e) {
-      next({ status: 400, message: 'Bad CID input' });
+      next({ status: 400, error: 'Bad CID input' });
       return;
     }
 
@@ -53,22 +53,26 @@ const server = async () => {
             modelCid,
           });
           next();
-        } catch ({ message }) {
-          next({ status: 415, message }); // Unsupported media type
+        } catch ({ error }) {
+          next({ status: 415, error }); // Unsupported media type
         }
       })
       .catch((error) => {
         if (error.response) {
-          next({ status: 404, message: `Error fetching ${url} - ${error.response.status}` });
+          next({ status: 404, error: `File Not Found: ${url}` });
         } else if (error.request) {
-          next({ status: 503, message: 'Unable to fetch data' });
-        } else next({ status: 500, message: error.message });
+          next({ status: 503, error: 'Upstream unavailable at ${url}' });
+        } else next({ status: 500, error: error.error });
       });
   });
 
+  app.use('/healthcheck', require('express-healthcheck')());
+
   // Error handling:
-  // eslint-disable-next-line no-unused-vars
-  app.use(({ status, message }, req, res, next) => res.status(status).send(message));
+  app.use(({ status, error }, req, res, next) => res.status(status).send({
+    http_status_code: status,
+    error: error
+  }));
 
   return app;
 };
