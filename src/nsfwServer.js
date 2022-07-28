@@ -16,7 +16,7 @@ const tf = require('@tensorflow/tfjs-node');
 
 const nsfwModel = require('./model');
 
-const ipfsGateway = process.env.IPFS_GATEWAY || 'http://127.0.0.1:8080';
+const ipfsGateway = process.env.IPFS_GATEWAY_URL || 'http://127.0.0.1:8080';
 
 const server = async () => {
   console.log('IPFS gateway:', ipfsGateway);
