@@ -66,9 +66,13 @@ const server = async () => {
       });
   });
 
+  app.use('/healthcheck', require('express-healthcheck')());
+
   // Error handling:
-  // eslint-disable-next-line no-unused-vars
-  app.use(({ status, message }, req, res, next) => res.status(status).send(message));
+  app.use(({ status, error }, req, res, next) => res.status(status).send({
+    http_status_code: status,
+    error: error
+  }));
 
   return app;
 };
