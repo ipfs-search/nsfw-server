@@ -38,5 +38,10 @@
     "ipfs-http-client": "^56.0.2",
     "nodemon": "^2.0.15",
     "nsfwjs": "^2.4.1"
+  },
+  "overrides": {
+    "get-pixels-frame-info-update": {
+      "jpeg-js": "^0.4.4"
+    }
   }
 }
