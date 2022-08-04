@@ -3,6 +3,3 @@ include:
 
 variables:
   DAST_DISABLED: "true"
-  AUTO_DEVOPS_BUILD_CACHE: "registry"
-  AUTO_BUILD_IMAGE_VERSION: "v1.17.0"
-  AUTO_DEVOPS_BUILD_CACHE_REF: "$CI_REGISTRY_IMAGE/cache:latest"
