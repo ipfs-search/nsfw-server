@@ -40,7 +40,8 @@ $ curl -s http://localhost:3000/classify/bafkreiam7vh2raw2chmx6gllup6sd32xsicwus
     "hentai": 0.00016194644558709115,
     "sexy": 0.00016178081568796188
   },
-  "nsfwjsVersion": "2.4.1"
+  "modelCid": "QmfBNCmYLxwTr3CHaknd5HdzA6uXcTZqn1hsuLf8mRc3xS",
+  "nsfwServerVersion": "0.9.0"
 }
 ```
 
