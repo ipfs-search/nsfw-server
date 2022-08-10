@@ -30,6 +30,7 @@ describe('mozilla grapefruit jpg', () => {
     .get(`/classify/${grapefruitCid}`)
     .expect(200)
     .expect(({ body }) => {
+      expect(body.nsfwServerVersion).toBe('0.9.0');
       expect(body.modelCid).toBe('mocked model CID');
       expect(body).toHaveProperty('classification.hentai');
       expect(body).toHaveProperty('classification.neutral');

@@ -16,6 +16,9 @@ const tf = require('@tensorflow/tfjs-node');
 
 const nsfwModel = require('./model');
 
+// Ref: https://stackoverflow.com/questions/9153571/is-there-a-way-to-get-version-from-package-json-in-nodejs-code
+const nsfwServerVersion = process.env.npm_package_version;
+
 const ipfsGateway = process.env.IPFS_GATEWAY_URL || 'http://127.0.0.1:8080';
 
 const server = async () => {
@@ -26,6 +29,7 @@ const server = async () => {
 
   const { model, modelCid } = await nsfwModel();
   console.log('model:', modelCid);
+  console.log('version:', nsfwServerVersion)
 
   app.get('/classify/:cid', (req, res, next) => {
     const { cid } = req.params;
@@ -51,6 +55,7 @@ const server = async () => {
               (entry) => [entry.className.toLowerCase(), entry.probability],
             )),
             modelCid,
+            nsfwServerVersion,
           });
           next();
         } catch ({ error }) {

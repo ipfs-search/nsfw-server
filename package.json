@@ -1,6 +1,6 @@
 {
   "name": "nsfw-server",
-  "version": "0.3.0",
+  "version": "0.9.0",
   "description": "A simple server to return nsfw.js results for images",
   "main": "src/nsfwServer.js",
   "scripts": {
