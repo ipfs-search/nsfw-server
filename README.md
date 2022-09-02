@@ -27,7 +27,7 @@ Run (auto-reloading) dev server with full debug enabled:
 ### Example usage
 
 ```sh
-$ curl -s http://localhost:3000/classify/bafkreiam7vh2raw2chmx6gllup6sd32xsicwus2riglpjtzlygz4lzmxbm | jq
+$ curl -s http://localhost:3423/classify/bafkreiam7vh2raw2chmx6gllup6sd32xsicwus2riglpjtzlygz4lzmxbm | jq
 ```
 (Wait a while... IPFS is slow. :/)
 
@@ -48,7 +48,7 @@ $ curl -s http://localhost:3000/classify/bafkreiam7vh2raw2chmx6gllup6sd32xsicwus
 ### Production server
 Run in production mode:
 
-`env NODE_ENV=production PORT=3342 npm start`
+`env NODE_ENV=production NSFW_SERVER_PORT=3342 npm start`
 
 ### Run tests
 `npm test`
@@ -59,7 +59,7 @@ Run in production mode:
 `docker build -t nsfw-server .`
 
 ### Run docker image in production on port 9000
-`docker run --env NODE_ENV=production -p 9000:3000 -t nsfw-server`
+`docker run --env NODE_ENV=production -p 9000:3423 -t nsfw-server`
 
 ## API
 To classify an [IPLD CID](https://docs.ipfs.io/concepts/content-addressing/):
@@ -72,7 +72,8 @@ We're using TensorFlow's [decodeImage](https://js.tensorflow.org/api_node/1.2.7/
 ## Configuration
 nsfw-server is configured through the following environment variables:
 * `IPFS_GATEWAY_URL`: Gateway to use for loading images. Defaults to `http://localhost:8080` (local node).
-* `PORT`: Port to run server on. Defaults to `3000`.
+* `NSFW_SERVER_HOST`: Host to run server on. Defaults to `localhost`.
+* `NSFW_SERVER_PORT`: Port to run server on. Defaults to `3423`.
 * `DEBUG`: [Debug](https://www.npmjs.com/package/debug) verbosity level.
 * `NODE_ENV`: Node environment. Set to `production` in ... production. Defaults to `development`.
 * `NSFW_MODEL`: NSFW model to use.
