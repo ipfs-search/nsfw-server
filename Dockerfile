@@ -20,7 +20,8 @@ COPY . .
 
 EXPOSE 3000
 USER node
-ENV HOST=0.0.0.0
+ENV NSFW_SERVER_PORT=3000
+ENV NSFW_SERVER_HOST=0.0.0.0
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:3000/healthcheck || exit 1
