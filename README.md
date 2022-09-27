@@ -5,7 +5,7 @@
 [![Backers on Open Collective](https://opencollective.com/ipfs-search/backers/badge.svg)](#backers)
 [![Sponsors on Open Collective](https://opencollective.com/ipfs-search/sponsors/badge.svg)](#sponsors)
 
-A simple node.js server to run [nsfw.js](https://nsfwjs.com/) for images on IPFS.
+A microservice to run [nsfw.js](https://nsfwjs.com/) for images on IPFS.
 
 ## Requirements
 * Node 16.x (LTS)
